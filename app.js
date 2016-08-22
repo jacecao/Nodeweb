@@ -3,35 +3,38 @@ var express = require('express');
 var serveStatic = require('serve-static');
 // 加载表单序列化模块
 var bodyParser = require('body-parser');
+
+//加载mongoDB数据处理模块
 var path = require('path');
 var mongoose = require('mongoose');
 var _ = require('underscore');
 var Movie = require('./models/movie');
+
+//端口设置
 var port = process.env.PORT || 3000;
 var app = express();
 
+//连接数据库
 mongoose.connect('mongodb://localhost/imovie');
+
 // 设置视图路径
 app.set('views','./views/pages');
 // 设置模板引擎为jade
 app.set('view engine','jade');
 // 指定读取静态资源的路径为bower_components文件夹（这里只加载bootstrap中的 css js）
 app.use(serveStatic('bower_components'));
-app.use(bodyParser.urlencoded());
+app.use(bodyParser.urlencoded({ extended: true }));
 app.locals.moment = require('moment');
-// 监听端口
-app.listen(port);
-
-console.log('imovie started on port:' +port);
 
 // 加载index page并指定访问路径
 app.get('/',function(req,res){
   Movie.fetch(function(err,movies){
-    if(err){
+    if(err) {
       console.log(err);
     }
-    res.render('index',{
-      title : 'Imove 首页',
+
+    res.render('index', {
+      title : 'Imovie 首页',
       movies: movies
     });
   });
@@ -40,6 +43,7 @@ app.get('/',function(req,res){
 // 加载detail page
 //访问路径就是localhost :3000/movie/id 
 app.get('/movie/:id',function(req,res){
+  
   var id = req.params.id;
 
   Movie.findById(id,function(err,movie){
@@ -48,12 +52,14 @@ app.get('/movie/:id',function(req,res){
       movie: movie
     });
   });
+
 });
+
 
 // 加载admin page
 app.get('/admin/movie',function(req,res){
   res.render('admin',{
-    title:'nodeweb 后台登陆',
+    title:'Imovie录入',
     movie: {
       title: '',
       doctor: '',
@@ -66,31 +72,36 @@ app.get('/admin/movie',function(req,res){
     }
   });
 });
+
+
 //admin uodate movie
 app.get('/admin/update/:id',function(req,res){
   var id = req.params.id;
   if(id){
     Movie.findById(id,function(err,movie){
       res.render('admin',{
-        title: 'Imovie 后台更新页',
+        title: 'Imovie更新',
         movie: movie
       }); 
     });
   }
 });
+
+
 //admin post movie
-app.post('/admin/movie/new',function(req,res){
+app.post('/admin/movie/new', function(req,res) {
   var id = req.body.movie._id;
   var movieObj = req.body.movie;
   var _movie;
 
   if( id != 'undefined'){
-    Movie.findById(id,function(err,movie){
+    Movie.findById(id,function(err,movie) {
       if(err){
         console.log(err);
       }
-      _movie = _.extend(movie,movieObj);
-      _movie.save(function(err,movie){
+      _movie = _.extend(movie, movieObj);
+      console.log(_movie);
+      _movie.save(function(err, movie) {
         if(err){
           console.log(err);
         }
@@ -99,13 +110,14 @@ app.post('/admin/movie/new',function(req,res){
     });
   }else{
     _movie = new Movie({
-      doctor:movieObj.doctor,
-      title:movieObj.title,
-      country:movieObj.country,
-      language:movieObj.language,
-      year:movieObj.year,
-      summary:movieObj.summary,
-      flash:movieObj.flash
+      title: movieObj.title,
+      doctor: movieObj.doctor,
+      country: movieObj.country,
+      language: movieObj.language,
+      poster: movieObj.poster,
+      flash: movieObj.flash,
+      year: movieObj.year,
+      summary: movieObj.summary
     });
     _movie.save(function(err,movie){
       if(err){
@@ -115,6 +127,8 @@ app.post('/admin/movie/new',function(req,res){
     });
   }
 });
+
+
 // 加载list page
 app.get('/admin/list',function(req,res){
   Movie.fetch(function(err,movies){
@@ -122,8 +136,12 @@ app.get('/admin/list',function(req,res){
       console.log(err);
     }
     res.render('list',{
-      title : 'Imove 列表页',
+      title : 'Imove列表',
       movies: movies
     });
   });
 });
+
+// 监听端口
+app.listen(port);
+console.log('imovie started on port:' +port);
