@@ -21,6 +21,9 @@ var MovieSchema = new mongoose.Schema({
   }
 });
 
+//定义中间件
+//这里是指在储存该数据前，我们需要做什么
+//Schema.pre/post/..('init/validate/save/remove',callback)
 MovieSchema.pre('save',function(next){
   if(this.isNew){
     this.meta.createAt = this.meta.updateAt = Date.now();
@@ -30,6 +33,7 @@ MovieSchema.pre('save',function(next){
   next();
 });
 
+//给数据模型绑定静态方法
 MovieSchema.statics = {
   fetch: function(cb){
     return this
