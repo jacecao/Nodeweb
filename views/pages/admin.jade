@@ -36,6 +36,6 @@ block content
 				.form-group
 					label.col-sm-2.control-label(for="inputSummary") 电影简介
 					.col-sm-10
-						input#inputSummary.form-control(type="text", name="movie[summary]", value="#{movie.summary}")
+						textarea#inputSummary.form-control(name="movie[summary]",rows=5) #{movie.summary}
 				
 				button.btn.btn-primary(type="submit") 录入

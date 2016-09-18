@@ -1,0 +1,18 @@
+{
+  "name": "Nodeweb",
+  "homepage": "https://github.com/jacecao/Nodeweb",
+  "authors": [
+    "jacecao <280749498@qq.com>"
+  ],
+  "description": "express+mongodb create web case",
+  "main": "",
+  "keywords": [
+    "express",
+    "web"
+  ],
+  "license": "MIT",
+  "private": true,
+  "dependencies": {
+    "bootstrap": "^3.3.7"
+  }
+}

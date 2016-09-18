@@ -1,8 +1,5 @@
 var express = require('express');
 
-// 加载静态资源模块serve-static
-var serveStatic = require('serve-static');
-
 // 加载表单序列化模块
 var bodyParser = require('body-parser');
 // parse application/x-www-form-urlencoded
@@ -21,6 +18,12 @@ var Movie = require('./models/movie');
 // 对象（object）和工具（utility）五大类
 var _ = require('underscore');
 
+
+// 加载路径处理模块
+// 该模块能规范的输出模块路径
+// 没有此模块也能正常运行
+var path = require('path');
+
 // 端口设置
 // process.env.PORT 这里是指Node环境中默认的端口
 var port = process.env.PORT || 3000;
@@ -36,13 +39,19 @@ app.set('views','./views/pages');
 // 设置模板引擎为jade
 app.set('view engine','jade');
 
-// 指定读取静态资源的路径为bower_components文件夹
+// express4版本内置的静态资源读取express.static()
+// 指定读取静态资源的路径为public文件夹
 // 这里主要是加载bootstrap中的 css js）
-app.use(serveStatic('bower_components'));
+// __dirname变量获取当前模块文件所在目录的完整绝对路径
+// app.use()是干啥的呢？
+// app.use 加载用于处理http請求的middleware（中间件），
+// 当一个请求来的时候，会依次被这些 middlewares处理
+app.use( express.static( path.join(__dirname, 'public') ) );
 
 // 加载时间处理模块
-// app.locals 其作用就是注册一个环境变量
-// 该环境变量可以在render()函数中传递
+// app.locals这个对象字面量中定义的键值对，
+// 是可以直接在模板中使用的，
+// 就和res.render时开发者传入的模板渲染参数一样
 // 这里是指可以在模板中使用moment方法
 // 在list.jade中我们需要将数据中的时间转换成mm/dd/yyyy
 // 那么久需要用到moment，所以这里是为了将该方法能传入到模板中
@@ -69,6 +78,7 @@ app.get('/',function(req,res){
 //访问路径就是localhost :3000/movie/id 
 app.get('/movie/:id',function(req,res){
   
+// req.params 获取路径变量值，这里指id这个变量
   var id = req.params.id;
 
   Movie.findById({_id:id}, function(err,movie) {
@@ -101,6 +111,7 @@ app.get('/admin/movie',function(req,res){
 
 //admin uodate movie
 app.get('/admin/update/:id',function(req,res){
+  
   var id = req.params.id;
   if(id){
     Movie.findById(id,function(err,movie){
@@ -110,6 +121,7 @@ app.get('/admin/update/:id',function(req,res){
       }); 
     });
   }
+  
 });
 
 
@@ -173,6 +185,26 @@ app.get('/admin/list',function(req,res){
       movies: movies,
     });
   });
+});
+
+
+// 接收删除请求
+app.delete('/admin/list',function(req, res) {
+  // req.query 主要获取到客户端提交过来的键值对
+  // '/admin/list?id=12'，这里就会获取到12
+  var id = req.query.id;
+  console.log(id);
+
+  if(id) {
+    Movie.remove({_id: id}, function(err) {
+      if( err ) {
+        console.log(err);
+      }else{
+        res.json({success: 1});
+      }
+    });
+  }
+
 });
 
 // 监听端口
