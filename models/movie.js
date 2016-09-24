@@ -1,4 +1,4 @@
- var mongoose = require('mongoose');
+var mongoose = require('mongoose');
 var MovieSchema = require('../schemas/movie.js');
 
 // 创建数据集Movie并得到数据模板Movie

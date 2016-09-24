@@ -14,6 +14,7 @@ var mongoose = require('mongoose');
 
 // 加载mongoDB数据模型集
 var Movie = require('./models/movie');
+var Users = require('./models/user');
 
 // 加载函数库
 // Underscor.js定义了一个下划线（_）对象，类似jquery的$
@@ -57,6 +58,8 @@ app.use( express.static( path.join(__dirname, 'public') ) );
 
 app.use(bodyParser.urlencoded({ extended: true }));
 
+
+
 // 加载时间处理模块
 // app.locals对象字面量中定义的键值对，
 // 是可以直接在模板中使用的，
@@ -84,7 +87,7 @@ app.get('/',function(req,res){
 });
 
 // 加载detail page
-//访问路径就是localhost :3000/movie/id 
+// 访问路径就是localhost :3000/movie/id 
 app.get('/movie/:id',function(req,res){
   
 // req.params 获取路径变量值，这里指id这个变量
@@ -103,7 +106,7 @@ app.get('/movie/:id',function(req,res){
 // 加载admin page
 app.get('/admin/movie',function(req,res){
   res.render('admin',{
-    title:'Imovie录入',
+    title:'Imovie 数据录入',
     movie: {
       title: '',
       doctor: '',
@@ -118,7 +121,7 @@ app.get('/admin/movie',function(req,res){
 });
 
 
-//admin uodate movie
+// admin uodate movie
 app.get('/admin/update/:id',function(req,res){
   
   var id = req.params.id;
@@ -133,8 +136,85 @@ app.get('/admin/update/:id',function(req,res){
   
 });
 
+// 用户注册
+app.post('/user/signup', function(req, res) {
+  
+  var user = req.body.user;
+  
+  // 注意在回调函数中返回参数一定不要与其他变量相同
+  // 否则会出错
+  // 比如下面的users变成user时就不会出现Bug
+  // 当没有找到user时程序会自动找本作用域的相同变量
+  
+  Users.findOne({name: user.name}, function(err, users) {
+    if( err ) { console.log(err); }
 
-//admin post movie  urlencoded, 
+    if( users ) {
+
+      res.json({
+        info: '用户已经存在啦',
+        state: 0
+      });
+
+    }else{
+
+      var _user = new Users(user);
+      _user.save(function(err, users) {
+        if(err){
+          console.log(err);
+        }else{
+          res.json({
+            info: '用户注册成功',
+            state: 1
+          });
+        }
+
+      });
+
+    }
+
+  });
+
+});
+
+// 用户注册
+app.post('/user/login', function(req, res) {
+  
+  var _user = req.body.user;
+  var name = _user.name;
+  var password = _user.password;
+
+  Users.findOne({name: name}, function(err, user) {
+    if(err) { console.log(err); }
+    if( !user ) {
+      res.json({
+        info: '没有该用户',
+        state: 0
+      });
+    }
+    else {
+
+      user.comparePassword(password, function(err, isMatch) {
+        if(isMatch) {
+          res.json({
+            info: user.name,
+            state: 1
+          });
+        }
+        else {
+          res.json({
+            info: '密码有错误',
+            state: 0
+          });
+        }
+      });
+      
+    }
+  });
+
+});
+
+// admin post movie  urlencoded, 
 app.post('/admin/movie/new', function(req, res) {
    
   if(!req.body) return res.sendStatus(400);
@@ -144,9 +224,6 @@ app.post('/admin/movie/new', function(req, res) {
   var _movie;
   
   if( id != 'undefined' && id != '' ) {
-
-    console.log('take hello');
-    console.log(id);
 
     Movie.findById(id, function(err,movie) {
       if(err){
@@ -216,6 +293,18 @@ app.delete('/admin/list',function(req, res) {
       }
     });
   }
+
+});
+
+// 404错误处理
+app.use(function(req, res, next) {
+
+  var err = new Error('Not Found');
+  err.status = 404;
+  res.render('404', {
+    title: '404错误'
+  });
+  next(err); 
 
 });
 

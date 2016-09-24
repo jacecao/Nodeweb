@@ -4,18 +4,24 @@
   "description": "express+mongodb create web",
   "main": "app.js",
   "dependencies": {
-    "express": "^4.14.0",
+    "bcrypt-nodejs": "0.0.3",
     "body-parser": "^1.15.2",
+    "express": "^4.14.0",
     "inherits": "^2.0.1",
     "jade": "^1.11.0",
     "moment": "^2.13.0",
     "mongoose": "^4.5.1",
     "path": "^0.12.7",
-    "underscore": "^1.8.3",
     "process": "^0.11.9",
+    "underscore": "^1.8.3",
     "util": "^0.10.3"
   },
-  "devDependencies": {},
+  "devDependencies": {
+    "bcryptjs": "^2.3.0",
+    "browser-sync": "^2.16.0",
+    "gulp": "^3.9.1",
+    "gulp-nodemon": "^2.1.0"
+  },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
