@@ -8,31 +8,42 @@ exports.signup = function(req, res) {
     // 否则会出错
     // 比如下面的users变成user时就不会出现Bug
     // 当没有找到user时程序会自动找本作用域的相同变量
-    Users.findOne({name: user.name}, function(err, users) {
+    Users.findOne({name: user.name}, function(err, auser) {
       if( err ) { console.log(err); }
 
-      if( users ) {
+      if( auser ) {
+        /*
         res.json({
           info: '用户已经存在啦',
           state: 0
         });
+        */
+        res.redirect('/login');
       }else{
         var _user = new Users(user);
-        _user.save(function(err, users) {
+        _user.save(function(err, auser) {
           if(err){
             console.log(err);
           }else{
+            /*
             res.json({
               info: '用户注册成功',
               state: 1
             });
+            */
+            req.session.user = auser;
+            res.redirect('/');
           }
         });
       }
 
     });
 };
-
+exports.showSign = function(req, res) {
+  res.render('signup', {
+    title: '用户注册'
+  });
+};
 // 用户登陆
 exports.login = function(req, res) {
   
@@ -43,10 +54,13 @@ exports.login = function(req, res) {
   Users.findOne({name: name}, function(err, user) {
     if(err) { console.log(err); }
     if( !user ) {
+      /*
       res.json({
         info: '没有该用户',
         state: 0
       });
+      */
+      res.redirect('/signup');
     }
     else {
 
@@ -59,10 +73,13 @@ exports.login = function(req, res) {
          return res.redirect('/');
         }
         else {
+          /*
           res.json({
             info: '密码有错误',
             state: 0
           });
+          */
+          res.redirect('/login');
         }
       });
       
@@ -70,10 +87,45 @@ exports.login = function(req, res) {
   });
 
 };
-
+exports.showLogin = function(req, res) {
+  res.render('login', {
+    title: '用户登录'
+  });
+};
 // 用户退出
 exports.logout = function(req, res) {
   delete req.session.user;
   //delete app.locals.user;
   res.redirect('/');
+};
+
+// 用户列表
+exports.userslist = function(req, res) {
+  Users.fetch(function(err,users){
+      if(err){
+        console.log(err);
+      }
+      res.render('userslist',{
+        title : '用户列表',
+        users: users,
+      });
+  });
+};
+
+// 用户权限中间件设置
+exports.userRequired = function(req, res, next) {
+  var user = req.session.user;
+  //console.log("*****111***"+user);
+  if( !user ) {
+    res.redirect('/signup');
+  }
+  next();
+};
+exports.superUser = function(req, res, next) {
+  var user = req.session.user;
+  //console.log("****222****"+user);
+  if( user.role < 10 ) {
+    res.redirect('/');
+  }
+  next();
 };

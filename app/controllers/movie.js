@@ -101,7 +101,6 @@ exports.save = function(req, res) {
     
 };
 
-
 // 加载list page
 exports.list = function(req,res) {
     
@@ -116,7 +115,6 @@ exports.list = function(req,res) {
     });
 
 };
-
 
 // 接收删除请求
 exports.delete = function(req, res) {

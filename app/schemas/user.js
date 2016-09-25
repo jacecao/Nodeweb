@@ -14,6 +14,12 @@ var UserSchema = new mongoose.Schema({
     type: String
   },
   password: String,
+  // 设置一个用户的权限属性
+  // 大于10时为超级用户
+  role: {
+    type: Number,
+    default: 0
+  },
   meta: {
     createAt: {
       // 这里是创建数据默认值，
@@ -82,5 +88,24 @@ UserSchema.methods = {
 
 };
 
+//给数据模型绑定静态方法
+UserSchema.statics = {
+  fetch: function(cb){
+    return this
+      // 查询所有的数据
+      .find({})
+      // 这里是排序
+      .sort('meta.updateAt')
+      // 这里是指将执行的结果传入回调函数
+      // 通常是返回数据状态和请求(储存)的数据
+      .exec(cb);
+  },
+  findById: function(id, cb){
+    return this
+    // 查询指定ID数据,这里的_id是mongodb会自动生成
+      .findOne({_id: id})
+      .exec(cb);
+  }
+};
 
 module.exports = UserSchema;
