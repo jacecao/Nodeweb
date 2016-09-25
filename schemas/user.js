@@ -10,6 +10,7 @@ var UserSchema = new mongoose.Schema({
   name: {
     // 设置需要检测该值的唯一性
     unique: true,
+    trim: true,
     type: String
   },
   password: String,
