@@ -39,7 +39,7 @@ var MonogoStore = require('connect-mongo')(session);
 
 
 // 设置视图路径
-app.set('views','./views/pages');
+app.set('views','./app/views/pages');
 // 设置模板引擎为jade
 app.set('view engine','jade');
 
@@ -64,13 +64,6 @@ app.use( session({
   }),
 }));
 
-// 将获取到的用户数据传入到页面变量中
-app.use( function(req, res, next) {
-  var _user = req.session.user;
-  if( _user ) { app.locals.user = _user ;} 
-  return next();
-});
-
 // 加载时间处理模块
 // app.locals对象字面量中定义的键值对，
 // 是可以直接在模板中使用的，
@@ -82,14 +75,13 @@ app.use( function(req, res, next) {
 // 在list模板中我们就需要 #{dateFun(xxxxx).format(MM/DD/YYYY)}
 app.locals.moment = require('moment');
 
-// 配置开发环境
+// 配置开发环境，主要用于显示数据交互信息等
 if ('development' === app.get('env')) {
   app.set('showStackError', true);
   app.use(morgan(':method :url :status'));
   app.locals.pretty = true;
   mongoose.set('debug', true);
 }
-
 
 // 载入路由文件
 require('./route/route.js')(app);
