@@ -1,6 +1,7 @@
 var Index = require('../app/controllers/index');
 var User = require('../app/controllers/user');
 var Imovie = require('../app/controllers/movie');
+var Comment = require('../app/controllers/comment');
 
 module.exports = function(app) {
   
@@ -41,4 +42,7 @@ module.exports = function(app) {
   // 用户列表 加入访问限制中间件
   app.get('/user/list', User.userRequired, User.superUser, User.userslist);
   
+  // Comment
+  app.post('/user/comment', User.userRequired, Comment.save);
+
 };

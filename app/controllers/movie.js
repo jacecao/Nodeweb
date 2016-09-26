@@ -1,4 +1,5 @@
 var Movie = require('../models/movie');
+var Comment = require('../models/comment');
 // 加载函数库
 // Underscor.js定义了一个下划线（_）对象，类似jquery的$
 // 函数库的所有方法都属于这个对象。这些方法大致上可以分成：
@@ -7,17 +8,23 @@ var Movie = require('../models/movie');
 // 说白了就是一个对以上数据有强大处理能力的模块
 var _ = require('underscore');
 
-// 加载detail page
-// 访问路径就是localhost :3000/movie/id 
 exports.detail = function(req,res){
     
   // req.params 获取路径变量值，这里指id这个变量
     var id = req.params.id;
     Movie.findById({_id:id}, function(err,movie) {
-      res.render('detail',{
-        title:'Imovie'+movie.title,
-        movie: movie
+
+      Comment
+        .find({movie: id})
+        .populate('from', 'name')
+        .exec(function(err, comments) {
+          res.render('detail',{
+            title: movie.title,
+            movie: movie,
+            comments: comments
+          });
       });
+      
     });
 
 };
@@ -25,7 +32,7 @@ exports.detail = function(req,res){
 // 加载admin page
 exports.new = function(req,res){
     res.render('admin',{
-      title:'Imovie 数据录入',
+      title:'电影数据录入',
       movie: {
         title: '',
         doctor: '',
@@ -46,7 +53,7 @@ exports.update = function(req,res){
     if(id){
       Movie.findById(id,function(err,movie){
         res.render('admin',{
-          title: 'Imovie更新',
+          title: '电影数据更新',
           movie: movie
         }); 
       });
@@ -109,7 +116,7 @@ exports.list = function(req,res) {
         console.log(err);
       }
       res.render('list',{
-        title : 'Imove列表',
+        title : '电影列表',
         movies: movies,
       });
     });
