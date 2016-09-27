@@ -1,8 +1,14 @@
 var mongoose = require('mongoose');
+var Schema = mongoose.Schema;
+var ObjectId = Schema.Types.ObjectId;
 
 // 创建数据模型，
 // 可以理解为每个数据中有什么字段，每个字段是什么类型的数据
 var MovieSchema = new mongoose.Schema({
+  category: {
+    type: ObjectId,
+    ref: 'Category'
+  },
   doctor: String,
   title: String,
   language: String,

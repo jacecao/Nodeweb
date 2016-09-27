@@ -1,30 +1,20 @@
+// 建立分类数据模型
 var mongoose = require('mongoose');
 var Schema = mongoose.Schema;
 var ObjectId = Schema.Types.ObjectId;
 
-// 创建评论数据模型，
-// 这里需要参考mongoose文档种的population
-// 这里通过population来创建数据关联
-var CommentSchema = new Schema({
-  movie: {
+// 创建数据模型，
+// 可以理解为每个数据中有什么字段，每个字段是什么类型的数据
+var CategorySchema = new mongoose.Schema({
+  name: String,
+  movies: [{
     type: ObjectId,
     ref: 'Movie'
-  },
-  from: {
-    type: ObjectId,
-    ref: 'User'
-  },
-  // 创建回复数据模式
-  reply: [
-    {
-      from: {type: ObjectId, ref: 'User'},
-      to: {type: ObjectId, ref: 'User'},
-      content: String,
-    },
-  ],
-  content: String,
+  }],
   meta: {
     createAt: {
+      // 这里是创建数据默认值，
+      // 会根据你的设定来自动赋值
       type: Date,
       default: Date.now()
     },
@@ -38,7 +28,7 @@ var CommentSchema = new Schema({
 //定义中间件
 //这里是指在储存该数据前，我们需要做什么
 //Schema.[pre/post/..(这里指数据状态)].('init/validate/save/remove',callback)
-CommentSchema.pre('save',function(next){
+CategorySchema.pre('save',function(next){
   if(this.isNew){
     this.meta.createAt = this.meta.updateAt = Date.now();
   }else{
@@ -48,7 +38,7 @@ CommentSchema.pre('save',function(next){
 });
 
 //给数据模型绑定静态方法
-CommentSchema.statics = {
+CategorySchema.statics = {
   fetch: function(cb){
     return this
       // 查询所有的数据
@@ -67,4 +57,4 @@ CommentSchema.statics = {
   }
 };
 
-module.exports = CommentSchema;
+module.exports = CategorySchema;

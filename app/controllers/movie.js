@@ -8,27 +8,6 @@ var Comment = require('../models/comment');
 // 说白了就是一个对以上数据有强大处理能力的模块
 var _ = require('underscore');
 
-exports.detail = function(req,res){
-    
-  // req.params 获取路径变量值，这里指id这个变量
-    var id = req.params.id;
-    Movie.findById({_id:id}, function(err,movie) {
-
-      Comment
-        .find({movie: id})
-        .populate('from', 'name')
-        .exec(function(err, comments) {
-          res.render('detail',{
-            title: movie.title,
-            movie: movie,
-            comments: comments
-          });
-      });
-      
-    });
-
-};
-
 // 加载admin page
 exports.new = function(req,res){
     res.render('admin',{
@@ -106,6 +85,32 @@ exports.save = function(req, res) {
 
     }
     
+};
+
+exports.detail = function(req,res){
+    
+  // req.params 获取路径变量值，这里指id这个变量
+    var id = req.params.id;
+    Movie.findById({_id:id}, function(err,movie) {
+      // 通过电影数据id来寻找对于的评论数据
+      // 然后再通过populat来处理关联数据
+      // 最后渲染到页面
+      // 先找movieID > comment > 再将movie和comment渲染到页面
+      Comment
+        .find({movie: id})
+        .populate('from', 'name')
+        // 注意这里需要mongoose版本>=3.6版本才能这样书写
+        .populate('reply.from reply.to', 'name')
+        .exec(function(err, comments) {
+          res.render('detail',{
+            title: movie.title,
+            movie: movie,
+            comments: comments
+          });
+      });
+      
+    });
+
 };
 
 // 加载list page

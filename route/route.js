@@ -2,6 +2,7 @@ var Index = require('../app/controllers/index');
 var User = require('../app/controllers/user');
 var Imovie = require('../app/controllers/movie');
 var Comment = require('../app/controllers/comment');
+var Category = require('../app/controllers/category');
 
 module.exports = function(app) {
   
@@ -26,10 +27,13 @@ module.exports = function(app) {
   app.get('/movie/list', User.userRequired, User.superUser, Imovie.list);
   // 接收电影删除请求
   app.delete('/movie/list', Imovie.delete);
+  // 电影分类提交
+  app.get('/movie/category', User.userRequired, User.superUser, Category.new);
+  app.post('/movie/category/new', Category.save);
+  app.get('/movie/category/list', User.userRequired, User.superUser, Category.list);
   // 加载detail page
   // 访问路径就是localhost :3000/movie/id 
   app.get('/movie/:id', Imovie.detail);
-
 
   // 用户注册
   app.post('/user/signup', User.signup);

@@ -12,12 +12,6 @@ exports.signup = function(req, res) {
       if( err ) { console.log(err); }
 
       if( auser ) {
-        /*
-        res.json({
-          info: '用户已经存在啦',
-          state: 0
-        });
-        */
         res.redirect('/login');
       }else{
         var _user = new Users(user);
@@ -25,12 +19,6 @@ exports.signup = function(req, res) {
           if(err){
             console.log(err);
           }else{
-            /*
-            res.json({
-              info: '用户注册成功',
-              state: 1
-            });
-            */
             req.session.user = auser;
             res.redirect('/');
           }
@@ -54,12 +42,6 @@ exports.login = function(req, res) {
   Users.findOne({name: name}, function(err, user) {
     if(err) { console.log(err); }
     if( !user ) {
-      /*
-      res.json({
-        info: '没有该用户',
-        state: 0
-      });
-      */
       res.redirect('/signup');
     }
     else {
@@ -73,12 +55,6 @@ exports.login = function(req, res) {
          return res.redirect('/');
         }
         else {
-          /*
-          res.json({
-            info: '密码有错误',
-            state: 0
-          });
-          */
           res.redirect('/login');
         }
       });
@@ -95,7 +71,6 @@ exports.showLogin = function(req, res) {
 // 用户退出
 exports.logout = function(req, res) {
   delete req.session.user;
-  //delete app.locals.user;
   res.redirect('/');
 };
 
