@@ -3,7 +3,8 @@ var Category = require('../models/category');
 exports.new = function(req, res) {
      
   res.render('category',{
-    title: '电影分类设置录入'
+    title: '电影分类设置录入',
+    category: {}
   });
 };
 

@@ -9,6 +9,7 @@ block content
 						th 类型
 						th 录入时间
 						th 更新时间
+						th 修改
 						th 删除
 				tbody
 					each item in categories
@@ -16,6 +17,8 @@ block content
 							td #{item.name}
 							td #{moment(item.meta.createAt).format('MM/DD/YYYY HH:MM:SS')}
 							td #{moment(item.meta.updateAt).format('MM/DD/YYYY HH:MM:SS')}
+							td: a(target="_blank",href="/update/#{item._id}") 修改
 							td
-								button.btn.btn-danger.del(type="button",data-id="#{item._id}") 删除
+								button.btn.btn-danger.btn-sm.del(type="button",data-id="#{item._id}") 删除
+			a.btn.btn-primary(href="/movie/category") 增加分类				
 	script(src="/js/remove.js")

@@ -1,5 +1,6 @@
 var Movie = require('../models/movie');
 var Comment = require('../models/comment');
+var Category = require('../models/category');
 // 加载函数库
 // Underscor.js定义了一个下划线（_）对象，类似jquery的$
 // 函数库的所有方法都属于这个对象。这些方法大致上可以分成：
@@ -10,19 +11,14 @@ var _ = require('underscore');
 
 // 加载admin page
 exports.new = function(req,res){
-    res.render('admin',{
-      title:'电影数据录入',
-      movie: {
-        title: '',
-        doctor: '',
-        country: '',
-        poster: '',
-        language: '',
-        flash:'',
-        summary: '',
-        year: ''
-      }
+    Category.find({}, function(err, categories) {
+      res.render('admin',{
+        title:'电影数据录入',
+        categories: categories,
+        movie: {}
     });
+    });
+    
 };
 
 // admin uodate movie
@@ -48,8 +44,8 @@ exports.save = function(req, res) {
     var id = req.body.movie._id;
     var movieObj = req.body.movie;
     var _movie;
-    
-    if( id != 'undefined' && id != '' ) {
+    console.log(movieObj);
+    if( id ) {
 
       Movie.findById(id, function(err,movie) {
         if(err){
@@ -66,21 +62,22 @@ exports.save = function(req, res) {
 
     }else{
 
-      _movie = new Movie({
-        title: movieObj.title,
-        doctor: movieObj.doctor,
-        country: movieObj.country,
-        language: movieObj.language,
-        poster: movieObj.poster,
-        flash: movieObj.flash,
-        year: movieObj.year,
-        summary: movieObj.summary
-      });
+      _movie = new Movie( movieObj );
+      // 保存分类的ID
+      var categoryId = movieObj.category;
       _movie.save(function(err,movie){
         if(err){
           console.log(err);
         }
-        res.redirect('/movie/'+movie._id);
+        console.log(movie);
+        Category.findById(categoryId, function(err, category) {
+          // 注意这里是得到刚才已经存入的movie的_id
+          console.log(category);
+          category.movies.push(movie._id);
+          category.save(function(err, category) {
+            res.redirect('/movie/'+movie._id);
+          });
+        });
       });
 
     }

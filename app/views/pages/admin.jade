@@ -4,42 +4,47 @@ block content
 	.container
 		.row
 			form.form-horizontal(method="post", action="/movie/movie/new")
-				input(type="hidden", name="movie[_id]", value="#{movie._id}")
-				.form-group
-					label.col-sm-2.control-label(for="inputTitle") 电影分类
-					.col-sm-6
-						input#inputTitle.form-control(type="text", name="movie[category]", value="#{movie.category}")
+				if movie._id
+					input(type="hidden", name="movie[_id]", value=movie._id)
 				.form-group
 					label.col-sm-2.control-label(for="inputTitle") 电影名字
 					.col-sm-6
-						input#inputTitle.form-control(type="text", name="movie[title]", value="#{movie.title}")
+						input#inputTitle.form-control(type="text", name="movie[title]", value=movie.title)
+				.form-group
+					label.col-sm-2.control-label(for="selectCategory") 电影分类
+					.col-sm-6
+						select#selectCategory.form-control(name="movie[category]")
+							each category in categories
+								option(value="#{category._id}") #{category.name}
 				.form-group
 					label.col-sm-2.control-label(for="inputDoctor") 电影导演
 					.col-sm-6
-						input#inputDoctor.form-control(type="text", name="movie[doctor]", value="#{movie.doctor}")
+						input#inputDoctor.form-control(type="text", name="movie[doctor]", value=movie.doctor)
 				.form-group
 					label.col-sm-2.control-label(for="inputCountry") 国家
 					.col-sm-6
-						input#inputCountry.form-control(type="text", name="movie[country]", value="#{movie.country}")
+						input#inputCountry.form-control(type="text", name="movie[country]", value=movie.country)
 				.form-group
 					label.col-sm-2.control-label(for="inputLanguage") 语言
 					.col-sm-6
-						input#inputLanguage.form-control(type="text", name="movie[language]", value="#{movie.language}")
+						input#inputLanguage.form-control(type="text", name="movie[language]", value=movie.language)
 				.form-group
 					label.col-sm-2.control-label(for="inputPoster") 海报地址
 					.col-sm-6
-						input#inputPoster.form-control(type="text", name="movie[poster]", value="#{movie.poster}")
+						input#inputPoster.form-control(type="text", name="movie[poster]", value=movie.poster)
 				.form-group
 					label.col-sm-2.control-label(for="inputFlash") 片源地址
 					.col-sm-6
-						input#inputFlash.form-control(type="text", name="movie[flash]", value="#{movie.flash}")
+						input#inputFlash.form-control(type="text", name="movie[flash]", value=movie.flash)
 				.form-group
 					label.col-sm-2.control-label(for="inputYear") 上映时间
 					.col-sm-6
-						input#inputYear.form-control(type="text", name="movie[year]", value="#{movie.year}")				
+						input#inputYear.form-control(type="text", name="movie[year]", value=movie.year)				
 				.form-group
 					label.col-sm-2.control-label(for="inputSummary") 电影简介
 					.col-sm-6
-						textarea#inputSummary.form-control(name="movie[summary]",rows=5) #{movie.summary}
+						textarea#inputSummary.form-control(name="movie[summary]",rows=5) movie.summary
+				.form-group
+					.col-sm-offset-2.col-sm-10
+						button.btn.btn-primary(type="submit") 录入
 				
-				button.btn.btn-primary(type="submit") 录入
