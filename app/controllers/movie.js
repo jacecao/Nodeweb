@@ -22,15 +22,23 @@ exports.new = function(req,res){
 };
 
 // admin uodate movie
-exports.update = function(req,res){
+exports.update = function(req, res){
     
     var id = req.params.id;
-    if(id){
-      Movie.findById(id,function(err,movie){
-        res.render('admin',{
-          title: '电影数据更新',
-          movie: movie
-        }); 
+    if(id) {
+      Movie.findById(id, function(err, movie) {
+        
+        if (err) { console.log(err); }
+
+        Category.find({}, function(err, categories) {
+          if (err) { console.log(err); }
+            res.render('admin',{
+            title: '电影数据更新',
+            movie: movie,
+            categories: categories
+          });
+        });
+        
       });
     }
     
@@ -43,7 +51,7 @@ exports.save = function(req, res) {
    
     var id = req.body.movie._id;
     var movieObj = req.body.movie;
-    var _movie;
+    var _movieObj, _movie;
     console.log(movieObj);
     if( id ) {
 
@@ -62,24 +70,30 @@ exports.save = function(req, res) {
 
     }else{
 
-      _movie = new Movie( movieObj );
       // 保存分类的ID
-      var categoryId = movieObj.category;
-      _movie.save(function(err,movie){
-        if(err){
-          console.log(err);
-        }
-        console.log(movie);
-        Category.findById(categoryId, function(err, category) {
-          // 注意这里是得到刚才已经存入的movie的_id
-          console.log(category);
-          category.movies.push(movie._id);
-          category.save(function(err, category) {
-            res.redirect('/movie/'+movie._id);
+      var categoryId = movieObj.categoryId;
+      Category.findById(categoryId, function(err, category) {
+        if (err) { console.log(err); }
+        _movieObj = _.extend({category: category.name}, movieObj); 
+        // console.log('******************');
+        // console.log(_movieObj);
+        _movie = new Movie( _movieObj );
+        _movie.save(function(err,movie){
+          if(err){
+            console.log(err);
+          }
+          console.log(movie);
+          Category.findById(categoryId, function(err, category) {
+            if (err) { console.log(err); }
+            // 注意这里是得到刚才已经存入的movie的_id
+            console.log(category);
+            category.movies.push(movie._id);
+            category.save(function(err, category) {
+              res.redirect('/movie/'+movie._id);
+            });
           });
         });
       });
-
     }
     
 };

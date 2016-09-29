@@ -6,6 +6,9 @@ block content
 			form.form-horizontal(method="post", action="/movie/movie/new")
 				if movie._id
 					input(type="hidden", name="movie[_id]", value=movie._id)
+				.form-group		
+					.col-sm-offset-2.col-sm-2
+						a.btn.btn-default(href="/movie/douban") 豆瓣录入		
 				.form-group
 					label.col-sm-2.control-label(for="inputTitle") 电影名字
 					.col-sm-6
@@ -13,7 +16,7 @@ block content
 				.form-group
 					label.col-sm-2.control-label(for="selectCategory") 电影分类
 					.col-sm-6
-						select#selectCategory.form-control(name="movie[category]")
+						select#selectCategory.form-control(name="movie[categoryId]")
 							each category in categories
 								option(value="#{category._id}") #{category.name}
 				.form-group
@@ -43,8 +46,9 @@ block content
 				.form-group
 					label.col-sm-2.control-label(for="inputSummary") 电影简介
 					.col-sm-6
-						textarea#inputSummary.form-control(name="movie[summary]",rows=5) movie.summary
+						textarea#inputSummary.form-control(name="movie[summary]", rows=5) #{movie.summary}
 				.form-group
-					.col-sm-offset-2.col-sm-10
+					.col-sm-offset-2.col-sm-1
 						button.btn.btn-primary(type="submit") 录入
+
 				

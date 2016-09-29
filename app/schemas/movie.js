@@ -5,15 +5,19 @@ var ObjectId = Schema.Types.ObjectId;
 // 创建数据模型，
 // 可以理解为每个数据中有什么字段，每个字段是什么类型的数据
 var MovieSchema = new mongoose.Schema({
-  category: {
+  categoryId: {
     type: ObjectId,
     ref: 'Category'
   },
+  category: String,
   doctor: String,
   title: String,
   language: String,
   country: String,
-  summary: String,
+  summary: {
+    type: String,
+    trim: true,
+  },  
   flash: String,
   poster: String,
   year: Number,
