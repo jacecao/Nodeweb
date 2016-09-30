@@ -7,8 +7,9 @@ block content
 				if movie._id
 					input(type="hidden", name="movie[_id]", value=movie._id)
 				.form-group		
-					.col-sm-offset-2.col-sm-2
-						a.btn.btn-default(href="/movie/douban") 豆瓣录入		
+					label.col-sm-2.control-label(for="inputDouban") 豆瓣录入
+					.col-sm-6
+						input#inputDouban.form-control(type="text", name="movie[douban]", placeholder="请输入豆瓣电影id")
 				.form-group
 					label.col-sm-2.control-label(for="inputTitle") 电影名字
 					.col-sm-6
@@ -50,5 +51,6 @@ block content
 				.form-group
 					.col-sm-offset-2.col-sm-1
 						button.btn.btn-primary(type="submit") 录入
+	script(src="/js/main.js")					
 
 				

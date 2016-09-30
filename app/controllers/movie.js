@@ -52,7 +52,9 @@ exports.save = function(req, res) {
     var id = req.body.movie._id;
     var movieObj = req.body.movie;
     var _movieObj, _movie;
+
     console.log(movieObj);
+
     if( id ) {
 
       Movie.findById(id, function(err,movie) {
@@ -72,28 +74,62 @@ exports.save = function(req, res) {
 
       // 保存分类的ID
       var categoryId = movieObj.categoryId;
-      Category.findById(categoryId, function(err, category) {
-        if (err) { console.log(err); }
-        _movieObj = _.extend({category: category.name}, movieObj); 
-        // console.log('******************');
-        // console.log(_movieObj);
-        _movie = new Movie( _movieObj );
-        _movie.save(function(err,movie){
-          if(err){
-            console.log(err);
-          }
-          console.log(movie);
-          Category.findById(categoryId, function(err, category) {
-            if (err) { console.log(err); }
-            // 注意这里是得到刚才已经存入的movie的_id
-            console.log(category);
+      if ( categoryId ) {
+
+        Category.findById(categoryId, function(err, category) {
+          
+          if (err) { console.log(err); }
+          _movieObj = _.extend({category: category.name}, movieObj); 
+          // console.log('******************');
+          // console.log(_movieObj);
+          _movie = new Movie( _movieObj );
+
+          _movie.save(function(err,movie){
+            if(err){
+              console.log(err);
+            }
+            console.log(movie);
             category.movies.push(movie._id);
             category.save(function(err, category) {
               res.redirect('/movie/'+movie._id);
             });
           });
+
         });
-      });
+
+      }else if (movieObj.category) {
+  
+        var category = new Category({
+          name: movieObj.category,
+          movies: []
+        });
+
+        category.save( function(err, category) {
+          
+          if (err) {
+            console.log(err); 
+          }
+          console.log(category._id);
+          movieObj.categoryId = category._id;
+          // console.log('+++++++++++++++++++++');
+          // console.log(movieObj);
+          _movie = new Movie(movieObj);
+          _movie.save(function(err,movie){
+            if(err){
+              console.log(err);
+              console.log("xxxxxxx");
+            }
+            // console.log('+++++++++++++++++++++');
+            // console.log(movie);
+            category.movies.push(movie._id);
+            category.save(function(err, category) {
+              res.redirect('/movie/'+movie._id);
+            });
+          });
+
+        });
+      }
+      
     }
     
 };
