@@ -8,6 +8,8 @@ var Category = require('../models/category');
 // 对象（object）和工具（utility）五大类
 // 说白了就是一个对以上数据有强大处理能力的模块
 var _ = require('underscore');
+var fs = require('fs');
+var path = require('path');
 
 // 加载admin page
 exports.new = function(req,res){
@@ -44,6 +46,48 @@ exports.update = function(req, res){
     
 };
 
+// save poster 作为数据处理上传中间件
+exports.savePoster = function(req, res, next) {
+  // 获取到长传文件的描述数据
+  console.log('+++++++++++++++++++++++++++++++');
+  // req.files 得到是上传文件对象
+  // {表单名(uploadPoster): {上传文件属性}}
+  // 这些属性包括一下内容：
+  // filelName\originalFilename\path\headers\size\name\type
+  // 其中这里的path不是指文件的原始路径而是内存路径
+  // fileName指字段名称 这里是指uploadPoster
+  console.log(req.files);
+  
+  var posterData = req.files.uploadPoster;
+  // 上传文件的地址
+  var filePath = posterData.path;
+  // 获取上传文件的原始名字
+  var originalFilename = posterData.originalFilename;
+
+  if (originalFilename) {
+    fs.readFile( filePath, function(err, data) {
+      var timestamp = Date.now();
+      // 获取原始文件的类型
+      var type = posterData.type.split('/')[1];
+      // 构建新的文件名
+      var poster = timestamp + '.' + type;
+      // 指向上传文件储存在服务器的绝对路径
+      // path.join 结合合并路径
+      var newPath = path.join(__dirname, '../../', '/public/upload/' + poster);
+      console.log('-----------------------------');
+      console.log(newPath);
+      fs.writeFile(newPath, data, function(err) {
+        req.poster = poster;
+        next();
+      });
+
+    });
+  }else{
+    next();
+  }
+
+};
+
 // admin post movie  urlencoded,
 exports.save = function(req, res) {
      
@@ -52,8 +96,10 @@ exports.save = function(req, res) {
     var id = req.body.movie._id;
     var movieObj = req.body.movie;
     var _movieObj, _movie;
-
-    console.log(movieObj);
+    // 检测是否收到中间件传来的req.poster
+    if (req.poster) {
+      movieObj.poster = req.poster;
+    }
 
     if( id ) {
 
@@ -138,7 +184,11 @@ exports.detail = function(req,res){
     
   // req.params 获取路径变量值，这里指id这个变量
     var id = req.params.id;
-    Movie.findById({_id:id}, function(err,movie) {
+    // 加入电影点击量
+    Movie.update({_id: id}, {$inc: {clicksRatio: 1}}, function(err) {
+      console.log(err);
+    });
+    Movie.findById({_id: id}, function(err,movie) {
       // 通过电影数据id来寻找对于的评论数据
       // 然后再通过populat来处理关联数据
       // 最后渲染到页面

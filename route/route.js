@@ -22,7 +22,7 @@ module.exports = function(app) {
   // admin uodate movie
   app.get('/movie/update/:id', Imovie.update);
   // admin post movie  urlencoded, 
-  app.post('/movie/movie/new', Imovie.save);
+  app.post('/movie/movie/new', Imovie.savePoster, Imovie.save);
   // 加载list page
   app.get('/movie/list', User.userRequired, User.superUser, Imovie.list);
   // 接收电影删除请求
@@ -31,6 +31,7 @@ module.exports = function(app) {
   app.get('/movie/category', User.userRequired, User.superUser, Category.new);
   app.post('/movie/category/new', Category.save);
   app.get('/movie/category/list', User.userRequired, User.superUser, Category.list);
+  app.get('/movie/results', Index.search);
   // 加载detail page
   // 访问路径就是localhost :3000/movie/id 
   app.get('/movie/:id', Imovie.detail);

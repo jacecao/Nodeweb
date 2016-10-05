@@ -37,6 +37,8 @@ var cookieParse = require('cookie-parser');
 var session = require('express-session');
 var MonogoStore = require('connect-mongo')(session);
 
+var multipart = require('connect-multiparty');
+
 
 // 设置视图路径
 app.set('views','./app/views/pages');
@@ -51,8 +53,8 @@ app.set('view engine','jade');
 // app.use 加载用于处理http請求的middleware（中间件），
 // 当一个请求来的时候，会依次被这些 middlewares处理
 app.use( express.static( path.join(__dirname, 'public') ) );
-
 app.use( bodyParser.urlencoded({ extended: true }) );
+app.use( multipart() );
 
 app.use( cookieParse() );
 
@@ -63,6 +65,7 @@ app.use( session({
     collection: 'sessions'
   }),
 }));
+
 
 // 加载时间处理模块
 // app.locals对象字面量中定义的键值对，

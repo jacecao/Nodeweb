@@ -14,6 +14,10 @@ var MovieSchema = new mongoose.Schema({
   title: String,
   language: String,
   country: String,
+  clicksRatio: {
+    type: Number,
+    default: 0
+  },
   summary: {
     type: String,
     trim: true,
