@@ -23,9 +23,5 @@
 
 希望能对你有帮助
 
-本项目来自慕课网，scott的node+mongodb建站攻略
-
-希望能为你填坑！！
-
 我的博客地址：[haiouyun.com](http://haiouyun.com/)
 
